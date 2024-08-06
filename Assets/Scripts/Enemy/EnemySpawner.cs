@@ -6,7 +6,7 @@ public class EnemySpawner : MonoBehaviour
 {
     public GameObject enemyPrefab;
     public Transform[] spawnPoints;
-    public int maxEnemies = 10;
+    public int maxEnemies = 999;
     private int currentEnemyCount;
 
     void Start()
