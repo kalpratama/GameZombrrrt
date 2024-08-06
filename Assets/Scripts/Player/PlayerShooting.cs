@@ -49,7 +49,7 @@ public class PlayerShooting : MonoBehaviour
 
             // Instantiate Impact Effect
             GameObject impactGO = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-            Destroy(impactGO, 2f);  // Destroy the impact effect after 2 seconds
+            Destroy(impactGO, 0.2f);
         }
     }
 }
