@@ -44963,7 +44963,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1755293356674451489, guid: 9ebead230bab89b488909567bc52d337, type: 3}
       propertyPath: m_Speed
-      value: 1.07
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 2325010294629462182, guid: 9ebead230bab89b488909567bc52d337, type: 3}
       propertyPath: m_Mesh
@@ -45486,6 +45486,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   healthBar: {fileID: 1769861262}
+  gameOverScreen: {fileID: 0}
+  killCountText: {fileID: 0}
+  timeSpentText: {fileID: 0}
 --- !u!1001 &7288094137546172433
 PrefabInstance:
   m_ObjectHideFlags: 0
