@@ -10,6 +10,7 @@ public class PlayerHealth : MonoBehaviour
     private float currentHealth;
     public Slider healthBar;
     public GameObject gameOverScreen;
+    public GameOver gameOverScript;
     public Text killCountText;
     public Text timeSpentText;
 
@@ -42,8 +43,8 @@ public class PlayerHealth : MonoBehaviour
     void Die()
     {
         Debug.Log("Player died");
-        SceneManager.LoadScene("2GameOver");
         gameOverScreen.SetActive(true);
+        gameOverScript.PlayerDied();
         Time.timeScale = 0f;
         killCountText.text = "Kills: " + killCount;
         timeSpentText.text = "Time Spent: " + Mathf.FloorToInt(timeSpent) + "s";
