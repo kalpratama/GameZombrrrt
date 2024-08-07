@@ -1,25 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerShooting : MonoBehaviour
 {
     public float damage = 10f;
     public float timeBetweenBullets = 0.15f;
     public float range = 100f;
-
     public Transform fpsCam;
     public ParticleSystem muzzleFlash;  // Change this to GameObject
     public GameObject impactEffect;
-
+    public Slider ammoBar;
     public int maxAmmo = 10;           // Maximum rounds per clip
     public float reloadTime = 2f;      // Time it takes to reload
     public float fireRate = 15f;
-
     private float timer;
-    private int currentAmmo;
+    public int currentAmmo;
     private bool isReloading = false;
     //private AudioSource gunAudio;
+    //private AudioSource reloadAudio;
     //private Light gunLight;
     private float nextTimeToFire = 0f;
     private WeaponRecoil weaponRecoil;
@@ -28,6 +28,16 @@ public class PlayerShooting : MonoBehaviour
     {
         weaponRecoil = GetComponent<WeaponRecoil>();
         currentAmmo = maxAmmo;
+
+        if (ammoBar == null)
+        {
+            ammoBar = FindObjectOfType<Slider>();
+        }
+
+        // Set slider max value to maxAmmo
+        ammoBar.maxValue = maxAmmo;
+        // Initialize slider value
+        ammoBar.value = currentAmmo;
     }
 
     void Update()
@@ -51,7 +61,7 @@ public class PlayerShooting : MonoBehaviour
             Shoot();
         }
 
-        
+        ammoBar.value = currentAmmo;
     }
 
     void Shoot()
@@ -60,11 +70,18 @@ public class PlayerShooting : MonoBehaviour
         currentAmmo--;
         //gunAudio.Play();
         muzzleFlash.Play();
+        Debug.Log("Shooting...");
 
         RaycastHit hit;
         if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
         {
-            Debug.Log(hit.transform.name);
+            Debug.Log("Shooting " + hit.transform.name);
+
+            DestroyGrave destroy = hit.transform.GetComponent<DestroyGrave>();
+            if (destroy != null)
+            {
+                destroy.TakeDamage(damage);
+            }
 
             Target target = hit.transform.GetComponent<Target>();
             if (target != null)
@@ -81,6 +98,7 @@ public class PlayerShooting : MonoBehaviour
     IEnumerator Reload()
     {
         isReloading = true;
+        //reloadAudio.Play();
         Debug.Log("Reloading...");
 
         yield return new WaitForSeconds(reloadTime);
