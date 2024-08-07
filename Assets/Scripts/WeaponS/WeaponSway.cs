@@ -5,7 +5,9 @@ using UnityEngine;
 public class WeaponSway : MonoBehaviour
 {
     public float swayAmount = 0.05f;
-    public float swaySpeed = 2f;
+    public float maxSwayAmount = 0.1f;
+    public float swaySmoothValue = 4f;
+
     private Vector3 initialPosition;
 
     void Start()
@@ -15,10 +17,13 @@ public class WeaponSway : MonoBehaviour
 
     void Update()
     {
-        float moveX = -Input.GetAxis("Mouse X") * swayAmount;
-        float moveY = -Input.GetAxis("Mouse Y") * swayAmount;
+        float movementX = -Input.GetAxis("Mouse X") * swayAmount;
+        float movementY = -Input.GetAxis("Mouse Y") * swayAmount;
 
-        Vector3 finalPosition = new Vector3(moveX, moveY, 0);
-        transform.localPosition = Vector3.Lerp(transform.localPosition, initialPosition + finalPosition, Time.deltaTime * swaySpeed);
+        movementX = Mathf.Clamp(movementX, -maxSwayAmount, maxSwayAmount);
+        movementY = Mathf.Clamp(movementY, -maxSwayAmount, maxSwayAmount);
+
+        Vector3 finalPosition = new Vector3(movementX, movementY, 0);
+        transform.localPosition = Vector3.Lerp(transform.localPosition, finalPosition + initialPosition, Time.deltaTime * swaySmoothValue);
     }
 }
