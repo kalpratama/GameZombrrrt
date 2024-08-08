@@ -29,6 +29,11 @@ public class EnemyAttack : MonoBehaviour
 
     void Attack()
     {
-        playerHealth.TakeDamage(damage);
+        Target target = GetComponent<Target>();
+        if (target.isDead == false)
+        {
+            playerHealth.TakeDamage(damage);
+
+        }
     }
 }
