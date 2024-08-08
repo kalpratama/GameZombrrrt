@@ -2,27 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemySpawner : MonoBehaviour
+public class EnemySpawner1 : MonoBehaviour
 {
     public GameObject enemyPrefab;
     public Transform[] spawnPoints;
     public int maxEnemies = 999;
     private int currentEnemyCount;
-    /*public bool setTimer;
-    public float timer;*/
+    //public int numberOfEnemy;
+    //public bool setTimer;
+    //public float timer;
 
     void Start()
     {
         currentEnemyCount = 0;
-        InvokeRepeating("SpawnEnemy", 2f, 5f);
+        InvokeRepeating("SpawnEnemy", 3f, 0.1f);
     }
 
     void SpawnEnemy()
     {
-        if (currentEnemyCount < maxEnemies)
+        if (currentEnemyCount < maxEnemies && Time.time < 6f)
         {
             int spawnIndex = Random.Range(0, spawnPoints.Length);
-            Instantiate(enemyPrefab, spawnPoints[spawnIndex].position, spawnPoints[spawnIndex].rotation);
+            Instantiate (enemyPrefab, spawnPoints[spawnIndex].position, spawnPoints[spawnIndex].rotation);
             currentEnemyCount++;
         }
     }
