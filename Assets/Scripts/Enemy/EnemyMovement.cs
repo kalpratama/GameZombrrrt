@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -15,6 +16,9 @@ public class EnemyMovement : MonoBehaviour
 
     void Update()
     {
-        navMeshAgent.SetDestination(player.position);
+        Target target = GetComponent<Target>();
+        if (target.isDead == false)
+            navMeshAgent.SetDestination(player.position);
+        
     }
 }

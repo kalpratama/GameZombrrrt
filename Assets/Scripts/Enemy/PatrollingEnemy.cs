@@ -18,13 +18,16 @@ public class PatrollingEnemy : MonoBehaviour
 
     void Update()
     {
-        // Move to the patrol target
-        navMeshAgent.SetDestination(patrolTarget);
-
-        // Check if the enemy has reached the patrol target
-        if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
+        Target target = GetComponent<Target>();
+        if (target.isDead == false)
         {
-            SetNewPatrolTarget();
+            navMeshAgent.SetDestination(patrolTarget);
+
+            // Check if the enemy has reached the patrol target
+            if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
+            {
+                SetNewPatrolTarget();
+            }
         }
     }
 

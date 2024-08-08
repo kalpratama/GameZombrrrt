@@ -6,8 +6,9 @@ public class Target : MonoBehaviour
 {
     public float health = 50f;
     private Animator animator;
-    private bool isDead = false;
-    public PatrollingEnemy enemyPatrol;
+    public bool isDead = false;
+    private PatrollingEnemy enemyPatrol;
+    public Target target;
 
     void Awake()
     {
@@ -29,11 +30,11 @@ public class Target : MonoBehaviour
     {
         isDead = true;
         animator.SetTrigger("Dies");
-        // Optionally, disable other components like NavMeshAgent, Collider, etc.
-        //GetComponent<Collider>().enabled = false;
+        GetComponent<Collider>().enabled = false;
         GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
-        //this.enabled = false; // Disable this script
+        this.enabled = false; // Disable this script
         enemyPatrol.enabled = false;
+        target.enabled = false;
 
         //Destroy(gameObject);
     }
