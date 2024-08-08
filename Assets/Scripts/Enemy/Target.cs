@@ -8,7 +8,7 @@ public class Target : MonoBehaviour
     private Animator animator;
     public bool isDead = false;
     private PatrollingEnemy enemyPatrol;
-    public Target target;
+    private Target target;
 
     void Awake()
     {
