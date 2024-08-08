@@ -37542,7 +37542,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.14089048, g: 1, b: 0, a: 0.392}
+  m_Color: {r: 1, g: 0.015590755, b: 0, a: 0.392}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -80122,12 +80122,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55919ac34a26952479f3fc91f777b2fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 5
+  MoveSpeed: 4
   SprintSpeed: 8
-  RotationSpeed: 2
+  RotationSpeed: 2.5
   SpeedChangeRate: 10
-  JumpHeight: 1.4
-  Gravity: -11
+  JumpHeight: 1
+  Gravity: -13
   JumpTimeout: 0.1
   FallTimeout: 0.15
   Grounded: 1
