@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class PlayerShooting : MonoBehaviour
 {
+    public AudioSource gunAudioSource;
+    public AudioClip gunshotClip;
     public float damage = 10f;
     public float timeBetweenBullets = 0.15f;
     public float range = 100f;
@@ -26,6 +28,7 @@ public class PlayerShooting : MonoBehaviour
 
     void Start()
     {
+        gunAudioSource = GetComponent<AudioSource>();
         weaponRecoil = GetComponent<WeaponRecoil>();
         currentAmmo = maxAmmo;
 
@@ -71,6 +74,8 @@ public class PlayerShooting : MonoBehaviour
         //gunAudio.Play();
         muzzleFlash.Play();
         Debug.Log("Shooting...");
+
+        gunAudioSource.PlayOneShot(gunshotClip);
 
         RaycastHit hit;
         if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))

@@ -25,6 +25,8 @@ public class GameOver : MonoBehaviour
         killCountText.text = "Kills: " + killCount.ToString();
         timeSpentText.text = "Time: " + Mathf.FloorToInt(timeSpent) + "s";
         Time.timeScale = 0f; // Pause the game
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     public void PlayAgain()
@@ -36,7 +38,7 @@ public class GameOver : MonoBehaviour
     public void Menu()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("MainMenu"); // Ensure you have a scene named "MainMenu"
+        SceneManager.LoadScene("0MainMenu"); // Ensure you have a scene named "MainMenu"
     }
 
     public void IncrementKillCount()

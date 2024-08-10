@@ -53,7 +53,7 @@ namespace TMPro.Examples
         void Awake()
         {
             if (QualitySettings.vSyncCount > 0)
-                Application.targetFrameRate = 60;
+                Application.targetFrameRate = 90;
             else
                 Application.targetFrameRate = -1;
 
@@ -68,12 +68,20 @@ namespace TMPro.Examples
         // Use this for initialization
         void Start()
         {
+            Cursor.lockState = CursorLockMode.Locked;
             if (CameraTarget == null)
             {
                 // If we don't have a target (assigned by the player, create a dummy in the center of the scene).
                 dummyTarget = new GameObject("Camera Target").transform;
                 CameraTarget = dummyTarget;
             }
+        }
+
+        void Update()
+        {
+            // Don't update camera movement if the game is paused
+            if (PauseMenu.GameIsPaused)
+                return;
         }
 
         // Update is called once per frame
