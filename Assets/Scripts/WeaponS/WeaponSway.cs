@@ -7,6 +7,7 @@ public class WeaponSway : MonoBehaviour
     public float swayAmount = 0.05f;
     public float maxSwayAmount = 0.1f;
     public float swaySmoothValue = 4f;
+    private PlayerAiming isAiming;
 
     private Vector3 initialPosition;
 
@@ -25,5 +26,6 @@ public class WeaponSway : MonoBehaviour
 
         Vector3 finalPosition = new Vector3(movementX, movementY, 0);
         transform.localPosition = Vector3.Lerp(transform.localPosition, finalPosition + initialPosition, Time.deltaTime * swaySmoothValue);
+
     }
 }
