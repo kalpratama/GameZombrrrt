@@ -19,10 +19,8 @@ public class PlayerShooting : MonoBehaviour
     public float fireRate = 15f;
     private float timer;
     public int currentAmmo;
+    public Animator animator;
     private bool isReloading = false;
-    //private AudioSource gunAudio;
-    //private AudioSource reloadAudio;
-    //private Light gunLight;
     private float nextTimeToFire = 0f;
     private WeaponRecoil weaponRecoil;
 
@@ -52,7 +50,7 @@ public class PlayerShooting : MonoBehaviour
             return;
         }
 
-        if (currentAmmo <= 0)
+        if (currentAmmo <= maxAmmo*.8 && Input.GetKey(KeyCode.R))
         {
             StartCoroutine(Reload());
             return;
@@ -69,44 +67,48 @@ public class PlayerShooting : MonoBehaviour
 
     void Shoot()
     {
-        timer = 0f;
-        currentAmmo--;
-        //gunAudio.Play();
-        muzzleFlash.Play();
-        Debug.Log("Shooting...");
-
-        gunAudioSource.PlayOneShot(gunshotClip);
-
-        RaycastHit hit;
-        if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
+        if (currentAmmo > 0)
         {
-            Debug.Log("Shooting " + hit.transform.name);
+            timer = 0f;
+            currentAmmo--;
+            muzzleFlash.Play();
+            Debug.Log("Shooting...");
 
-            DestroyGrave destroy = hit.transform.GetComponent<DestroyGrave>();
-            if (destroy != null)
+            gunAudioSource.PlayOneShot(gunshotClip);
+
+            RaycastHit hit;
+            if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
             {
-                destroy.TakeDamage(damage);
-            }
+                Debug.Log("Shooting " + hit.transform.name);
 
-            Target target = hit.transform.GetComponent<Target>();
-            if (target != null)
-            {
-                target.TakeDamage(damage);
-            }
+                Target target = hit.transform.GetComponent<Target>();
+                if (target != null)
+                {
+                    GameObject impactGO = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+                    Destroy(impactGO, 0.2f);
+                    target.TakeDamage(damage);
+                }
 
-            // Instantiate Impact Effect
-            GameObject impactGO = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-            Destroy(impactGO, 0.2f);
+                DestroyGrave destroy = hit.transform.GetComponent<DestroyGrave>();
+                if (destroy != null)
+                {
+                    destroy.TakeDamage(damage);
+                }
+                weaponRecoil.ApplyRecoil();
+            }
         }
     }
 
     IEnumerator Reload()
     {
         isReloading = true;
-        //reloadAudio.Play();
         Debug.Log("Reloading...");
 
-        yield return new WaitForSeconds(reloadTime);
+        animator.SetBool("Reloading", true);
+        yield return new WaitForSeconds(reloadTime - 0.25f);
+
+        animator.SetBool("Reloading", false);
+        yield return new WaitForSeconds(0.25f);
 
         currentAmmo = maxAmmo;
         isReloading = false;
