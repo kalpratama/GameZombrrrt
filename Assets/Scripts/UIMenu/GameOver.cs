@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class GameOver : MonoBehaviour
 {
     public GameObject gameOverUI;
-    public TextMesh killCountText;
-    public Text timeSpentText;
+    public TextMeshProUGUI killCountText;
+    public TextMeshProUGUI timeSpentText;
 
     private int killCount;
     private float timeSpent;
@@ -21,9 +22,11 @@ public class GameOver : MonoBehaviour
     public void PlayerDied()
     {
         gameOverUI.SetActive(true);
-        killCountText.text = "Kills: " + killCount;
+        killCountText.text = "Kills: " + killCount.ToString();
         timeSpentText.text = "Time: " + Mathf.FloorToInt(timeSpent) + "s";
         Time.timeScale = 0f; // Pause the game
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     public void PlayAgain()
@@ -35,12 +38,13 @@ public class GameOver : MonoBehaviour
     public void Menu()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("MainMenu"); // Ensure you have a scene named "MainMenu"
+        SceneManager.LoadScene("0MainMenu"); // Ensure you have a scene named "MainMenu"
     }
 
     public void IncrementKillCount()
     {
         killCount++;
+        Debug.Log("Kill Count Incremented: " + killCount);
     }
 }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -11,8 +12,8 @@ public class PlayerHealth : MonoBehaviour
     public Slider healthBar;
     public GameObject gameOverScreen;
     public GameOver gameOverScript;
-    public Text killCountText;
-    public Text timeSpentText;
+    public TextMeshProUGUI killCountText;
+    public TextMeshProUGUI timeSpentText;
 
     private float timeSpent;
     private int killCount;
