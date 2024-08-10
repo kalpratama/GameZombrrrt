@@ -5,27 +5,28 @@ using UnityEngine.UI;
 
 public class PlayerShooting : MonoBehaviour
 {
-    public AudioSource gunAudioSource;
-    public AudioClip gunshotClip;
     public float damage = 10f;
     public float timeBetweenBullets = 0.15f;
     public float range = 100f;
+    public int maxAmmo = 10;           // Maximum rounds per clip
+    public float fireRate = 15f;
+    private float timer;
+    public int currentAmmo;
+    public AudioSource gunAudioSource;
+    public AudioClip gunshotClip;
     public Transform fpsCam;
     public ParticleSystem muzzleFlash;  // Change this to GameObject
     public GameObject impactEffect;
     public Slider ammoBar;
-    public int maxAmmo = 10;           // Maximum rounds per clip
-    public float reloadTime = 2f;      // Time it takes to reload
-    public float fireRate = 15f;
-    private float timer;
-    public int currentAmmo;
+    private WeaponRecoil weaponRecoil;
     public Animator animator;
+    public float reloadTime = 2f;      // Time it takes to reload
     private bool isReloading = false;
     private float nextTimeToFire = 0f;
-    private WeaponRecoil weaponRecoil;
 
     void Start()
     {
+
         gunAudioSource = GetComponent<AudioSource>();
         weaponRecoil = GetComponent<WeaponRecoil>();
         currentAmmo = maxAmmo;
@@ -43,6 +44,7 @@ public class PlayerShooting : MonoBehaviour
 
     void Update()
     {
+
         timer += Time.deltaTime;
 
         if (isReloading)
@@ -64,6 +66,7 @@ public class PlayerShooting : MonoBehaviour
 
         ammoBar.value = currentAmmo;
     }
+
 
     void Shoot()
     {
@@ -98,7 +101,6 @@ public class PlayerShooting : MonoBehaviour
             }
         }
     }
-
     IEnumerator Reload()
     {
         isReloading = true;
