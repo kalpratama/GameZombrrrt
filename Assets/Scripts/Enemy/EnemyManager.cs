@@ -11,15 +11,20 @@ public class EnemyManager : MonoBehaviour
     void Start()
     {
         winCanvas.SetActive(false);
-        enemies = GameObject.FindGameObjectsWithTag("Enemy"); // Assumes all enemies have the "Enemy" tag
     }
 
     void Update()
     {
+        UpdateEnemyList();
         if (AllEnemiesDefeated())
         {
             ShowWinScreen();
         }
+    }
+
+    void UpdateEnemyList()
+    {
+        enemies = GameObject.FindGameObjectsWithTag("Enemy"); // Continuously update the enemies array
     }
 
     bool AllEnemiesDefeated()
