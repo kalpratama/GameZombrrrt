@@ -8,7 +8,7 @@ using TMPro;
 public class PlayerHealth : MonoBehaviour
 {
     public float maxHealth = 100f;
-    private float currentHealth;
+    public float currentHealth;
     public Slider healthBar;
     public GameObject gameOverScreen;
     public GameOver gameOverScript;
@@ -32,6 +32,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        Debug.Log("Took Damage");
         currentHealth -= amount;
         healthBar.value = currentHealth;
 
