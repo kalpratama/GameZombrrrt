@@ -15,6 +15,8 @@ public class Target : MonoBehaviour
     void Awake()
     {
         animator = GetComponent<Animator>();
+        gameOverScript = FindObjectOfType<GameOver>();
+
     }
     public void TakeDamage(float amount)
     {
@@ -32,6 +34,7 @@ public class Target : MonoBehaviour
     {
         isDead = true;
         animator.SetTrigger("Dies");
+        Debug.Log("Enemy Died");
         gameOverScript.IncrementKillCount();
         GetComponent<Collider>().enabled = false;
         GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
