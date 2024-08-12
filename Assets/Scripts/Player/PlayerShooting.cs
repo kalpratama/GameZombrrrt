@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,6 +24,7 @@ public class PlayerShooting : MonoBehaviour
     public float reloadTime = 2f;      // Time it takes to reload
     private bool isReloading = false;
     private float nextTimeToFire = 0f;
+    public TextMeshProUGUI reloadText;
 
     void Start()
     {
@@ -40,16 +42,26 @@ public class PlayerShooting : MonoBehaviour
         ammoBar.maxValue = maxAmmo;
         // Initialize slider value
         ammoBar.value = currentAmmo;
+
+        // Ensure the reload text is hidden at the start
+        if (reloadText != null)
+        {
+            reloadText.enabled = false;
+        }
     }
 
     void Update()
     {
-
         timer += Time.deltaTime;
 
         if (isReloading)
         {
             return;
+        }
+
+        if (reloadText != null)
+        {
+            reloadText.enabled = (currentAmmo <= 0);
         }
 
         if (currentAmmo <= maxAmmo*.8 && Input.GetKey(KeyCode.R))
@@ -114,6 +126,11 @@ public class PlayerShooting : MonoBehaviour
 
         currentAmmo = maxAmmo;
         isReloading = false;
-    }
 
+        // Hide the reload text after reloading
+        if (reloadText != null)
+        {
+            reloadText.enabled = false;
+        }
+    }
 }
