@@ -180,7 +180,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: START
+  m_text: BEGIN
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1345,7 +1345,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -400, y: 450}
+  m_AnchoredPosition: {x: -300, y: 350}
   m_SizeDelta: {x: 999, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1521554147
@@ -1368,8 +1368,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'You just woke up in the barracks. Not realizing the apocalypse of zombies
-    outside. '
+  m_text: You are in an abandoned military base, and you are trying to recover important
+    documents while staying alive in the middle of zombie invasion.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1981,7 +1981,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -400, y: 300}
+  m_AnchoredPosition: {x: -300, y: 200}
   m_SizeDelta: {x: 999, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1949465153
@@ -2004,8 +2004,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Find and recover important documents in the base. You can find those in
-    the barracks, and on the surveillance tower. \n\n\nBeware of the Undead!"
+  m_text: "Find and recover at least 30 important documents in the area. You can
+    find them in the barracks, in the offices, and on the surveillance tower. \nDocuments
+    on the surveillance towers worth 5 times the regular documents!\n\nBeware of
+    the Undead!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

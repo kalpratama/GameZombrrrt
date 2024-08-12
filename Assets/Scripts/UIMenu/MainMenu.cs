@@ -14,6 +14,8 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         SceneManager.LoadScene("1GameScene"); // Ensure you replace "GameScene" with your actual game scene name
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     public void ShowCredits()
