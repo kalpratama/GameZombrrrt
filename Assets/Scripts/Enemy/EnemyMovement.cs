@@ -17,6 +17,11 @@ public class EnemyMovement : MonoBehaviour
 
     void Start()
     {
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player").transform;
+        }
+
         navMeshAgent = GetComponent<NavMeshAgent>();
         originalPosition = transform.position;
         StartCoroutine(Patrol());

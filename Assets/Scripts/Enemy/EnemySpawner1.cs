@@ -15,13 +15,13 @@ public class EnemySpawner1 : MonoBehaviour
     void Start()
     {
         currentEnemyCount = 0;
-        InvokeRepeating("SpawnEnemy", 3f, 0.1f);
+        InvokeRepeating("SpawnEnemy", 1f, 0.1f);
         DontDestroyOnLoad(gameObject);
     }
 
     void SpawnEnemy()
     {
-        if (currentEnemyCount < maxEnemies && Time.time < 6f)
+        if (currentEnemyCount < maxEnemies && Time.time < 9f)
         {
             int spawnIndex = Random.Range(0, spawnPoints.Length);
             Instantiate (enemyPrefab, spawnPoints[spawnIndex].position, spawnPoints[spawnIndex].rotation);
