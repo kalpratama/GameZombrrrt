@@ -33,7 +33,7 @@ public class ScoreManager : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = "Files: " + score.ToString();
+            scoreText.text = score.ToString();
         }
     }
 }
