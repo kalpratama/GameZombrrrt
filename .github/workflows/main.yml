@@ -30,6 +30,6 @@ jobs:
       #     targetPlatform: StandaloneWindows64
 
       - name: Request Activation File
-        uses: game-ci/unity-request-activation-file@v4
+        uses: game-ci/unity-request-activation-file@v3
         with: 
           unityVersion: 2022.3.20f1
