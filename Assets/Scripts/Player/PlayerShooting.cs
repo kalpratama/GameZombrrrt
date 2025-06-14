@@ -109,7 +109,7 @@ public class PlayerShooting : MonoBehaviour
                 {
                     destroy.TakeDamage(damage);
                 }
-                weaponRecoil.ApplyRecoil();
+                //weaponRecoil.ApplyRecoil();
             }
         }
     }
