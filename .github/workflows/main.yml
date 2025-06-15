@@ -21,6 +21,12 @@ jobs:
           restore-keys: |
             Library-
 
+      - name: Clean up old Docker resources
+        run: |
+          echo "Membersihkan kontainer dan image Docker yang tidak terpakai..."
+          docker system prune -a -f || true # -a: all, -f: force, || true: jangan gagal jika tidak ada yang dibersihkan
+          echo "Cleanup selesai."
+
       - name: Build project
         uses: game-ci/unity-builder@v4
         env:
