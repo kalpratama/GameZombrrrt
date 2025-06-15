@@ -43,6 +43,8 @@ jobs:
       # Unity Specific Step; to generate build solution
       - name: Generate C# Solution File
         uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           unityVersion: 2022.3.20f1 # Replace with your Unity version
           targetPlatform: StandaloneLinux64 # Can be any platform, we just need the .sln
