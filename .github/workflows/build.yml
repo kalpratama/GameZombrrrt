@@ -1,10 +1,12 @@
 name: CI-Inspection with SonarQube
 on:
   push:
-    branches: [ main ]
+    branches: 
+      - main
   pull_request_target:
-    branches: [ main ]
     types: [opened, synchronize, reopened]
+
+  workflow_dispatch:
 
 jobs:
   build:
@@ -19,6 +21,7 @@ jobs:
           distribution: 'zulu' # Alternative distribution options are available.
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
   
       # Run checking for Unity license
@@ -68,7 +71,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: bash
         run: |
-          # Note the Linux paths (/) and the added .sln filename
           ./.sonar/scanner/dotnet-sonarscanner begin /k:"kalpratama_GameZombrrrt" /o:"kalpratama" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build YourProjectName.sln #<-- IMPORTANT: Replace with your actual .sln file name
+          dotnet build YourProjectName.sln 
           ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
