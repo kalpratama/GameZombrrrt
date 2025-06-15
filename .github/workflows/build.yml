@@ -24,7 +24,7 @@ jobs:
       - name: Generate C# Solution File
         uses: game-ci/unity-builder@v4
         with:
-          unityVersion: 2022.3.15f1 # Replace with your Unity version
+          unityVersion: 2022.3.20f1 # Replace with your Unity version
           targetPlatform: StandaloneLinux64 # Can be any platform, we just need the .sln
           customParameters: -executeMethod UnityEditor.SyncVS.SyncSolution -quit
 
