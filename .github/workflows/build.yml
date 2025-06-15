@@ -46,7 +46,7 @@ jobs:
             -e UNITY_LICENSE \
             -v "${{ github.workspace }}":/project \
             -w /project \
-            unityci/editor:ubuntu-2022.3.20f1-base \
+            unityci/editor:2022-lts \
             /opt/unity/Editor/Unity \
               -batchmode \
               -nographics \
