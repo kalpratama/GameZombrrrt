@@ -13,13 +13,6 @@ public class PlayerAiming : MonoBehaviour
     public float fovSpeed = 8f;
     public float aimSpeed = 8f;       // Speed at which the weapon transitions
     private bool isAiming = false;
-    private WeaponSway weaponSway;
-
-    void Start()
-    {
-        // Get the WeaponSway component attached to the weapon
-        weaponSway = weapon.GetComponent<WeaponSway>();
-    }
 
     void Update()
     {
@@ -48,21 +41,21 @@ public class PlayerAiming : MonoBehaviour
 
     void Aim()
     {
-        if (weaponSway != null)
+        /*if (weaponSway != null)
         {
             weaponSway.enabled = false;
-        }
+        }*/
         weapon.localPosition = Vector3.Lerp(weapon.localPosition, aimPosition.localPosition, Time.deltaTime * aimSpeed);
         weapon.localRotation = Quaternion.Lerp(weapon.localRotation, aimPosition.localRotation, Time.deltaTime * aimSpeed);
     }
 
     void HipFire()
     {
-        // Enable Weapon Sway when not aiming
+        /*// Enable Weapon Sway when not aiming
         if (weaponSway != null)
         {
             weaponSway.enabled = true;
-        }
+        }*/
         weapon.localPosition = Vector3.Lerp(weapon.localPosition, normalPosition.localPosition, Time.deltaTime * aimSpeed);
         weapon.localRotation = Quaternion.Lerp(weapon.localRotation, normalPosition.localRotation, Time.deltaTime * aimSpeed);
     }
