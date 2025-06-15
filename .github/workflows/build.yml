@@ -40,7 +40,9 @@ jobs:
 
       - name: Install SonarQube Cloud scanner globally
         shell: bash
-        run: dotnet tool install --global dotnet-sonarscanner
+        run: |
+          cd /tmp
+          dotnet tool install --global dotnet-sonarscanner
 
       - name: Build and analyze
         env:
