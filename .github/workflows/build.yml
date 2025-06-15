@@ -29,9 +29,9 @@ jobs:
             echo "SUCCESS: UNITY_LICENSE secret was found."
           } else {
             echo "ERROR: UNITY_LICENSE secret is MISSING or empty."
-            exit 1
-          }
-          
+            exit 1
+          }
+      
       - name: Generate C# Solution File
         uses: game-ci/unity-builder@v4
         with:
