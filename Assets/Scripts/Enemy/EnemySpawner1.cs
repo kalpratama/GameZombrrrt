@@ -16,7 +16,7 @@ public class EnemySpawner1 : MonoBehaviour
     {
         currentEnemyCount = 0;
         InvokeRepeating("SpawnEnemy", 1f, 0.1f);
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
     }
 
     void SpawnEnemy()
