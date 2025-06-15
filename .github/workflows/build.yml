@@ -22,6 +22,16 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       
       # Unity Specific Step; to generate build solution
+      - name: Check for presence of UNITY_LICENSE secret
+        shell: powershell
+        run: |
+          if ($env:UNITY_LICENSE -ne "") {
+            echo "SUCCESS: UNITY_LICENSE secret was found."
+          } else {
+            echo "ERROR: UNITY_LICENSE secret is MISSING or empty."
+            exit 1
+          }
+          
       - name: Generate C# Solution File
         uses: game-ci/unity-builder@v4
         with:
