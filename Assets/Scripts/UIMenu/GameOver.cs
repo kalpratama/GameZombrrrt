@@ -8,8 +8,8 @@ using TMPro;
 public class GameOver : MonoBehaviour
 {
     public GameObject gameOverUI;
-    public TextMeshProUGUI killCountText;
-    public TextMeshProUGUI timeSpentText;
+    /*public TextMeshProUGUI killCountText;
+    public TextMeshProUGUI timeSpentText;*/
 
     private int killCount;
     private float timeSpent;
@@ -34,8 +34,8 @@ public class GameOver : MonoBehaviour
         isGameOver = true;
         Debug.Log("Player DIed");
         gameOverUI.SetActive(true);
-        killCountText.text = "Kills: " + killCount.ToString();
-        timeSpentText.text = "Time: " + Mathf.FloorToInt(timeSpent) + "s";
+        /*killCountText.text = "Kills: " + killCount.ToString();
+        timeSpentText.text = "Time: " + Mathf.FloorToInt(timeSpent) + "s";*/
         Time.timeScale = 0f; // Pause the game
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
