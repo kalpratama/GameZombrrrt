@@ -25,12 +25,12 @@ jobs:
       - name: Check for presence of UNITY_LICENSE secret
         shell: bash
         run: |
-          if ($env:UNITY_LICENSE -ne "") {
+          if [[ -n "$UNITY_LICENSE" ]]; then
             echo "SUCCESS: UNITY_LICENSE secret was found."
-          } else {
+          else
             echo "ERROR: UNITY_LICENSE secret is MISSING or empty."
             exit 1
-          }
+          fi
           
       # Unity Specific Step; to generate build solution
       - name: Generate C# Solution File
