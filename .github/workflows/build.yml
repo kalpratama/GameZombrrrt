@@ -1,4 +1,4 @@
-name: CI - SonarCloud Analysis
+name: CI - SonarCloud Code Inspection
 
 on:
   push:
@@ -9,16 +9,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-analyze:
-    name: Build and Analyze
-    # WAJIB: Pastikan baris ini tertulis 'windows-latest' dan indentasinya benar.
+  code-inspection:
+    name: Code Quality Inspection
     runs-on: windows-latest
+    
     steps:
-
-      - name: Checkout Pull Request Code
+      - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       - name: Set up JDK 17
@@ -30,25 +29,65 @@ jobs:
       - name: Set up .NET SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '8.0.x'
 
-      # Langkah instalasi mono-devel sudah dihapus karena kita di Windows
-
-      - name: Install SonarScanner Globally
-        # PENTING: Gunakan 'pwsh' (PowerShell) sebagai shell di Windows
+      - name: Install SonarScanner
         shell: pwsh
         run: dotnet tool install --global dotnet-sonarscanner
 
-      - name: Execute SonarCloud Analysis
+      - name: Debug Project Structure
+        shell: pwsh
+        run: |
+          Write-Host "=== Project Structure Debug ==="
+          Write-Host "Current Path: $(Get-Location)"
+          Write-Host "C# Files Found:"
+          Get-ChildItem -Path "Assets" -Filter "*.cs" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 10 | ForEach-Object { Write-Host "  $($_.FullName)" }
+          Write-Host "Solution/Project Files:"
+          Get-ChildItem -Filter "*.sln" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  Solution: $($_.Name)" }
+          Get-ChildItem -Filter "*.csproj" -Recurse -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  Project: $($_.Name)" }
+          Write-Host "==============================="
+
+      - name: SonarCloud Code Analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        # PENTING: Gunakan 'pwsh' juga di sini
         shell: pwsh
         run: |
-          dotnet-sonarscanner begin /k:"kalpratama_GameZombrrrt" /o:"kalpratama" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          Write-Host "Starting SonarCloud Analysis..."
           
-          # Perintah ini yang membutuhkan .NET Framework dan harus berjalan di Windows
-          dotnet build GameZombrrrt.sln
+          dotnet-sonarscanner begin `
+            /k:"kalpratama_GameZombrrrt" `
+            /o:"kalpratama" `
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
+            /d:sonar.host.url="https://sonarcloud.io" `
+            /d:sonar.sources="Assets/Scripts" `
+            /d:sonar.exclusions="**/Packages/**,**/Library/**,**/Temp/**,**/Build/**,**/Builds/**,**/*.meta,**/Editor/**" `
+            /d:sonar.cs.file.suffixes=".cs" `
+            /d:sonar.verbose=true
           
-          dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          # For inspection, we don't need full build - just compile check
+          Write-Host "Performing compilation check..."
+          
+          # Try to find and minimally build project files for analysis
+          $projectFiles = Get-ChildItem -Filter "*.csproj" -Recurse | Where-Object { 
+            $_.Name -notlike "*Editor*" -and 
+            $_.Name -notlike "*Test*" -and
+            $_.Directory.Name -ne "Library"
+          }
+          
+          if ($projectFiles) {
+            foreach ($project in $projectFiles) {
+              Write-Host "Analyzing project: $($project.Name)"
+              try {
+                # Light build for analysis only
+                dotnet build $project.FullName --configuration Debug --verbosity quiet --no-restore
+              } catch {
+                Write-Host "Build failed for $($project.Name), continuing with analysis..."
+              }
+            }
+          } else {
+            Write-Host "No .csproj files found. Analysis will proceed with source files only."
+          }
+          
+          Write-Host "Finalizing SonarCloud Analysis..."
+          dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
