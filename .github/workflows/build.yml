@@ -1,21 +1,24 @@
-name: CI-Inspection with SonarQube
+name: CI - SonarCloud Analysis
+
 on:
   push:
     branches: 
       - main
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build and analyze
+  build-and-analyze:
+    name: Build and Analyze
     runs-on: ubuntu-latest
     steps:
 
-      - name: Checkout repository
+      - name: Checkout Pull Request Code
         uses: actions/checkout@v4
         with:
+          # This is critical for pull_request_target to analyze the correct code
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
       - name: Set up JDK 17
@@ -27,19 +30,22 @@ jobs:
       - name: Set up .NET SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.0.x' # Or a version compatible with your project
+          dotnet-version: '6.0.x'
 
-      - name: Install .NET Framework 4.7.1 Targeting Pack
+      - name: Install .NET Framework Dependencies
+        # This step fixes the "reference assemblies for .NETFramework,Version=v4.7.1 were not found" error
         run: sudo apt-get update && sudo apt-get install -y mono-devel
 
-      - name: Install SonarQube scanner globally
+      - name: Install SonarScanner Globally
         shell: bash
+        # This step uses "cd /tmp" to avoid conflicts with project files in the workspace
         run: |
           cd /tmp
           dotnet tool install --global dotnet-sonarscanner
 
-      - name: Build and analyze with SonarCloud
+      - name: Execute SonarCloud Analysis
         env:
+          # GITHUB_TOKEN is automatically provided by GitHub
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: bash
