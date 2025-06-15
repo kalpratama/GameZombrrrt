@@ -1,9 +1,9 @@
 name: CI-Inspection with SonarQube
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request_target:
+    branches: [ main ]
     types: [opened, synchronize, reopened]
 
 jobs:
