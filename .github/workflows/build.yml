@@ -5,8 +5,11 @@ on:
       - main
   pull_request_target:
     types: [opened, synchronize, reopened]
-
   workflow_dispatch:
+    inputs:
+      license_from_user:
+        description: 'Paste the content of the UNITY_LICENSE secret here'
+        required: true
 
 jobs:
   build:
@@ -27,6 +30,8 @@ jobs:
       # Run checking for Unity license
       - name: Check for presence of UNITY_LICENSE secret
         shell: bash
+        env:
+          UNITY_LICENSE: ${{ inputs.license_from_user }}
         run: |
           if [[ -n "$UNITY_LICENSE" ]]; then
             echo "SUCCESS: UNITY_LICENSE secret was found."
