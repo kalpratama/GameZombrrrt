@@ -29,6 +29,9 @@ jobs:
         with:
           dotnet-version: '6.0.x' # Or a version compatible with your project
 
+      - name: Install .NET Framework 4.7.1 Targeting Pack
+        run: sudo apt-get update && sudo apt-get install -y mono-devel
+
       - name: Install SonarQube scanner globally
         shell: bash
         run: |
