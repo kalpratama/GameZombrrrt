@@ -1,5 +1,4 @@
-name: CI - SonarCloud Code Inspection
-
+name: CI-Inspection with SonarQube
 on:
   push:
     branches: 
@@ -9,85 +8,82 @@ on:
   workflow_dispatch:
 
 jobs:
-  code-inspection:
-    name: Code Quality Inspection
-    runs-on: windows-latest
-    
+  build:
+    name: Build and analyze
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 0
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: 'zulu'
-
-      - name: Set up .NET SDK
-        uses: actions/setup-dotnet@v4
+          distribution: 'zulu' # Alternative distribution options are available.
+      - uses: actions/checkout@v4
         with:
-          dotnet-version: '8.0.x'
-
-      - name: Install SonarScanner
-        shell: pwsh
-        run: dotnet tool install --global dotnet-sonarscanner
-
-      - name: Debug Project Structure
-        shell: pwsh
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+  
+      # Run checking for Unity license
+      - name: Check for presence of UNITY_LICENSE secret
+        shell: bash
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         run: |
-          Write-Host "=== Project Structure Debug ==="
-          Write-Host "Current Path: $(Get-Location)"
-          Write-Host "C# Files Found:"
-          Get-ChildItem -Path "Assets" -Filter "*.cs" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 10 | ForEach-Object { Write-Host "  $($_.FullName)" }
-          Write-Host "Solution/Project Files:"
-          Get-ChildItem -Filter "*.sln" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  Solution: $($_.Name)" }
-          Get-ChildItem -Filter "*.csproj" -Recurse -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  Project: $($_.Name)" }
-          Write-Host "==============================="
+          if [[ -n "$UNITY_LICENSE" ]]; then
+            echo "SUCCESS: UNITY_LICENSE secret was found."
+          else
+            echo "ERROR: UNITY_LICENSE secret is MISSING or empty."
+            exit 1
+          fi
+  
+      # Step 1: Install and Activate the Unity Editor
+      - name: Activate Unity License
+        uses: game-ci/unity-activate@v2
+        with:
+          unityVersion: 2022.3.20f1
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
-      - name: SonarCloud Code Analysis
+      # Step 2: Run the command directly using the activated Unity Editor
+      - name: Generate C# Solution File
+        shell: bash
+        run: |
+          /opt/unity/Editor/Unity \
+            -batchmode \
+            -nographics \
+            -projectPath . \
+            -executeMethod UnityEditor.SyncVS.SyncSolution \
+            -quit \
+            -logFile /dev/stdout
+      
+      - name: Cache SonarQube Cloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache SonarQube Cloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v4
+        with:
+          path: ./.sonar/scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+
+      - name: Install SonarQube Cloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p ./.sonar/scanner
+          dotnet tool install dotnet-sonarscanner --tool-path ./.sonar/scanner
+
+      - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        shell: pwsh
+        shell: bash
         run: |
-          Write-Host "Starting SonarCloud Analysis..."
-          
-          dotnet-sonarscanner begin `
-            /k:"kalpratama_GameZombrrrt" `
-            /o:"kalpratama" `
-            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-            /d:sonar.host.url="https://sonarcloud.io" `
-            /d:sonar.sources="Assets/Scripts" `
-            /d:sonar.exclusions="**/Packages/**,**/Library/**,**/Temp/**,**/Build/**,**/Builds/**,**/*.meta,**/Editor/**" `
-            /d:sonar.cs.file.suffixes=".cs" `
-            /d:sonar.verbose=true
-          
-          # For inspection, we don't need full build - just compile check
-          Write-Host "Performing compilation check..."
-          
-          # Try to find and minimally build project files for analysis
-          $projectFiles = Get-ChildItem -Filter "*.csproj" -Recurse | Where-Object { 
-            $_.Name -notlike "*Editor*" -and 
-            $_.Name -notlike "*Test*" -and
-            $_.Directory.Name -ne "Library"
-          }
-          
-          if ($projectFiles) {
-            foreach ($project in $projectFiles) {
-              Write-Host "Analyzing project: $($project.Name)"
-              try {
-                # Light build for analysis only
-                dotnet build $project.FullName --configuration Debug --verbosity quiet --no-restore
-              } catch {
-                Write-Host "Build failed for $($project.Name), continuing with analysis..."
-              }
-            }
-          } else {
-            Write-Host "No .csproj files found. Analysis will proceed with source files only."
-          }
-          
-          Write-Host "Finalizing SonarCloud Analysis..."
-          dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          ./.sonar/scanner/dotnet-sonarscanner begin /k:"kalpratama_GameZombrrrt" /o:"kalpratama" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet build GameZombrrrt.sln 
+          ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
