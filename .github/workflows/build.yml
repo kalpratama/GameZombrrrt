@@ -27,7 +27,7 @@ jobs:
       - name: Check for presence of UNITY_LICENSE secret
         shell: bash
         env:
-          UNITY_LICENSE: ${{ inputs.license_from_user }}
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         run: |
           if [[ -n "$UNITY_LICENSE" ]]; then
             echo "SUCCESS: UNITY_LICENSE secret was found."
