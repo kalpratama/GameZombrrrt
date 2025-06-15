@@ -40,7 +40,7 @@ jobs:
       - name: Activate Unity License
         uses: game-ci/unity-activate@v2
         with:
-          unityVersion: 2022.3.20f1
+          customImage: unityci/editor:ubuntu-2022.3.20f1-base-0
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
