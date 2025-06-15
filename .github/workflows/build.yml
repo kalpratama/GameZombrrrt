@@ -36,25 +36,23 @@ jobs:
             exit 1
           fi
   
-      # Step 1: Install and Activate the Unity Editor
-      - name: Activate Unity License
-        uses: game-ci/unity-activate@v2
-        with:
-          customImage: unityci/editor:ubuntu-2022.3.20f1-base-0
+      # REPLACED a faulty action with a direct Docker command for 100% control
+      - name: Generate C# Solution File via Docker
+        shell: bash
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-
-      # Step 2: Run the command directly using the activated Unity Editor
-      - name: Generate C# Solution File
-        shell: bash
         run: |
-          /opt/unity/Editor/Unity \
-            -batchmode \
-            -nographics \
-            -projectPath . \
-            -executeMethod UnityEditor.SyncVS.SyncSolution \
-            -quit \
-            -logFile /dev/stdout
+          docker run \
+            -e UNITY_LICENSE \
+            -v "${{ github.workspace }}":/project \
+            -w /project \
+            unityci/editor:ubuntu-2022.3.20f1-base-0 \
+            /opt/unity/Editor/Unity \
+              -batchmode \
+              -nographics \
+              -executeMethod UnityEditor.SyncVS.SyncSolution \
+              -quit \
+              -logFile /dev/stdout
       
       - name: Cache SonarQube Cloud packages
         uses: actions/cache@v4
