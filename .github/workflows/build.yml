@@ -27,9 +27,7 @@ jobs:
       - name: Check for presence of UNITY_LICENSE secret
         shell: bash
         env:
-          UNITY_LICENSE: ${{ secrets.license_from_user }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_LICENSE: ${{ inputs.license_from_user }}
         run: |
           if [[ -n "$UNITY_LICENSE" ]]; then
             echo "SUCCESS: UNITY_LICENSE secret was found."
@@ -43,6 +41,8 @@ jobs:
         uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           unityVersion: 2022.3.20f1 # Replace with your Unity version
           targetPlatform: StandaloneLinux64 # Can be any platform, we just need the .sln
