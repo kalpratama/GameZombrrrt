@@ -35,7 +35,7 @@ public class EnemyMovement : MonoBehaviour
         {
             StopCoroutine(Patrol());
             isPatrolling = false;
-            navMeshAgent.SetDestination(player.position);
+            //navMeshAgent.SetDestination(player.position);
         }
         else
         {
