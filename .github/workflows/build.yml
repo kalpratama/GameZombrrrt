@@ -36,18 +36,24 @@ jobs:
             exit 1
           fi
   
-      # Unity Specific Step; to generate build solution
-      - name: Generate C# Solution File
-        uses: game-ci/unity-builder@v4
+      # REPLACED a faulty action with a direct Docker command for 100% control
+      - name: Generate C# Solution File via Docker
+        shell: bash
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          unityVersion: 2022.3.20f1
-          executeMethod: UnityEditor.SyncVS.SyncSolution
-          customParameters: -logFile /dev/stdout
-
+        run: |
+          docker run \
+            -e UNITY_LICENSE \
+            -v "${{ github.workspace }}":/project \
+            -w /project \
+            unityci/editor:2022-lts \
+            /opt/unity/Editor/Unity \
+              -batchmode \
+              -nographics \
+              -executeMethod UnityEditor.SyncVS.SyncSolution \
+              -quit \
+              -logFile /dev/stdout
+      
       - name: Cache SonarQube Cloud packages
         uses: actions/cache@v4
         with:
