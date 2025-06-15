@@ -22,37 +22,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-  
-      # Run checking for Unity license
-      - name: Check for presence of UNITY_LICENSE secret
-        shell: bash
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-        run: |
-          if [[ -n "$UNITY_LICENSE" ]]; then
-            echo "SUCCESS: UNITY_LICENSE secret was found."
-          else
-            echo "ERROR: UNITY_LICENSE secret is MISSING or empty."
-            exit 1
-          fi
-  
-      # REPLACED a faulty action with a direct Docker command for 100% control
-      - name: Generate C# Solution File via Docker
-        shell: bash
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-        run: |
-          docker run \
-            -e UNITY_LICENSE \
-            -v "${{ github.workspace }}":/project \
-            -w /project \
-            unityci/editor:2022-lts \
-            /opt/unity/Editor/Unity \
-              -batchmode \
-              -nographics \
-              -executeMethod UnityEditor.SyncVS.SyncSolution \
-              -quit \
-              -logFile /dev/stdout
       
       - name: Cache SonarQube Cloud packages
         uses: actions/cache@v4
