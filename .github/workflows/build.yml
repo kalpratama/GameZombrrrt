@@ -14,10 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Checkout Pull Request Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          # This is critical for pull_request_target to analyze the correct code
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
@@ -27,31 +26,35 @@ jobs:
           java-version: 17
           distribution: 'zulu'
 
-      - name: Set up .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '6.0.x'
-
-      - name: Install .NET Framework Dependencies
-        # This step fixes the "reference assemblies for .NETFramework,Version=v4.7.1 were not found" error
-        run: sudo apt-get update && sudo apt-get install -y mono-devel
-
-      - name: Install SonarScanner Globally
-        shell: bash
-        # This step uses "cd /tmp" to avoid conflicts with project files in the workspace
-        run: |
-          cd /tmp
-          dotnet tool install --global dotnet-sonarscanner
-
-      - name: Execute SonarCloud Analysis
+      - name: Install SonarScanner
+        run: dotnet tool install --global dotnet-sonarscanner --version 5.15.0
+      
+      - name: Start SonarScanner
         env:
-          # GITHUB_TOKEN is automatically provided by GitHub
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        shell: bash
         run: |
           dotnet-sonarscanner begin /k:"kalpratama_GameZombrrrt" /o:"kalpratama" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          
-          dotnet build GameZombrrrt.sln
-          
+
+      - name: Build Project inside Unity Environment
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        run: |
+          docker run \
+            -e UNITY_LICENSE \
+            -v "${{ github.workspace }}":/project \
+            -w /project \
+            unityci/editor:2022-lts \
+            /opt/unity/Editor/Unity \
+              -batchmode \
+              -nographics \
+              -buildTarget StandaloneLinux64 \
+              -projectPath . \
+              -logFile /dev/stdout
+
+      - name: End SonarScanner
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
           dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
