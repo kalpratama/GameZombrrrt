@@ -48,6 +48,12 @@ jobs:
           executeMethod: UnityEditor.SyncVS.SyncSolution
           customParameters: -logFile /dev/stdout
 
+      - name: DEBUG - List files in workspace
+        shell: bash
+        run: |
+          echo "Listing all files in the current directory and subdirectories..."
+          ls -R
+
       - name: Cache SonarQube Cloud packages
         uses: actions/cache@v4
         with:
