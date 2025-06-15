@@ -19,7 +19,7 @@ public class PlayerShooting : MonoBehaviour
     public ParticleSystem muzzleFlash;  // Change this to GameObject
     public GameObject impactEffect;
     public Slider ammoBar;
-    private WeaponRecoil weaponRecoil;
+    //private WeaponRecoil weaponRecoil;
     public Animator animator;
     public float reloadTime = 2f;      // Time it takes to reload
     private bool isReloading = false;
@@ -30,7 +30,7 @@ public class PlayerShooting : MonoBehaviour
     {
 
         gunAudioSource = GetComponent<AudioSource>();
-        weaponRecoil = GetComponent<WeaponRecoil>();
+        //weaponRecoil = GetComponent<WeaponRecoil>();
         currentAmmo = maxAmmo;
 
         if (ammoBar == null)
