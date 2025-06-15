@@ -1,74 +1,24 @@
-name: CI-Inspection with SonarQube
+name: CI - SonarCloud Analysis (Simple)
+
 on:
   push:
-    branches:
+    branches: 
       - main
   pull_request_target:
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 jobs:
-  build:
-    name: Build and analyze
+  sonarcloud:
     runs-on: ubuntu-latest
     steps:
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: 'zulu' # Alternative distribution options are available.
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      
-      # Run checking for Unity license
-      - name: Check for presence of UNITY_LICENSE secret
-        shell: bash
-        run: |
-          if [[ -n "$UNITY_LICENSE" ]]; then
-            echo "SUCCESS: UNITY_LICENSE secret was found."
-          else
-            echo "ERROR: UNITY_LICENSE secret is MISSING or empty."
-            exit 1
-          fi
-          
-      # Unity Specific Step; to generate build solution
-      - name: Generate C# Solution File
-        uses: game-ci/unity-builder@v4
-        with:
-          unityVersion: 2022.3.20f1 # Replace with your Unity version
-          targetPlatform: StandaloneLinux64 # Can be any platform, we just need the .sln
-          customParameters: -executeMethod UnityEditor.SyncVS.SyncSolution -quit
-     
-      - name: Cache SonarQube Cloud packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
 
-      - name: Cache SonarQube Cloud scanner
-        id: cache-sonar-scanner
-        uses: actions/cache@v4
-        with:
-          path: ./.sonar/scanner
-          key: ${{ runner.os }}-sonar-scanner
-          restore-keys: ${{ runner.os }}-sonar-scanner
-
-      - name: Install SonarQube Cloud scanner
-        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          mkdir -p ./.sonar/scanner
-          dotnet tool install dotnet-sonarscanner --tool-path ./.sonar/scanner
-
-      - name: Build and analyze
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        shell: bash
-        run: |
-          # Note the Linux paths (/) and the added .sln filename
-          ./.sonar/scanner/dotnet-sonarscanner begin /k:"kalpratama_GameZombrrrt" /o:"kalpratama" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build YourProjectName.sln #<-- IMPORTANT: Replace with your actual .sln file name
-          ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
