@@ -38,7 +38,7 @@ jobs:
   
       # Step 1: Install and Activate the Unity Editor
       - name: Activate Unity License
-        uses: game-ci/unity-activate@v3
+        uses: game-ci/unity-activate@v2
         with:
           unityVersion: 2022.3.20f1
         env:
