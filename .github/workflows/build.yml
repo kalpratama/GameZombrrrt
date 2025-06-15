@@ -46,7 +46,7 @@ jobs:
         with:
           unityVersion: 2022.3.20f1 # Replace with your Unity version
           targetPlatform: StandaloneLinux64 # Can be any platform, we just need the .sln
-          builtMethod: ""
+          buildMethod: ""
           customParameters: -executeMethod UnityEditor.SyncVS.SyncSolution -quit -logFile /dev/stdout
 
       - name: Cache SonarQube Cloud packages
