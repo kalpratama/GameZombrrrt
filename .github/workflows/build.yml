@@ -1,41 +1,65 @@
-name: CI-Inspection with SonarQube
+# Nama workflow yang akan muncul di tab Actions
+name: CI-Inspection with SonarCloud
+
+# Memicu workflow pada push ke 'main' atau pada Pull Request yang menargetkan 'main'
 on:
   push:
     branches:
       - main
+      - nizar-inspection # Ditambahkan agar Anda bisa menguji langsung di branch Anda
   pull_request:
     types: [opened, synchronize, reopened]
+    branches:
+      - main
 
 jobs:
-  build:
-    name: Build and analyze
+  build_and_analyze: # Nama job diubah agar lebih deskriptif
+    name: Build and Analyze with SonarCloud
     runs-on: windows-latest
     steps:
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      # Langkah 1: Checkout kode
+      # fetch-depth: 0 sangat penting agar SonarCloud bisa menganalisis riwayat commit
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          java-version: 17
-          distribution: "zulu" # Alternative distribution options are available.
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
 
-      # Unity Specific Step; to generate build solution
+      # Langkah 2 (FIXED): Menyiapkan lingkungan .NET SDK yang diperlukan untuk C#
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.x' # Versi .NET yang umum untuk Unity modern
+
+      # Langkah 3: (Opsional tapi direkomendasikan) Cache folder Library Unity untuk mempercepat build
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      # Langkah 4 (FIXED): Generate file .sln dengan parameter yang lebih aman
       - name: Generate C# Solution File
         uses: game-ci/unity-builder@v4
         with:
-          unityVersion: 2022.3.20f1 # Replace with your Unity version
-          targetPlatform: StandaloneLinux64 # Can be any platform, we just need the .sln
-          customParameters: -executeMethod UnityEditor.SyncVS.SyncSolution -quit
+          # PENTING: Pastikan versi Unity ini sudah benar!
+          unityVersion: 2022.3.20f1
+          targetPlatform: StandaloneLinux64
+          # FIX: Menambahkan -batchmode dan -nographics agar stabil di server
+          customParameters: -executeMethod UnityEditor.SyncVS.SyncSolution -quit -batchmode -nographics
+        env:
+          # PENTING: Jika menggunakan Unity Pro, secret ini wajib ada. Jika pakai Personal, hapus blok 'env:' ini.
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
-      - name: Cache SonarQube Cloud packages
+      # Langkah 5: Cache untuk paket dan tool SonarCloud
+      - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
           path: ~\sonar\cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-
-      - name: Cache SonarQube Cloud scanner
+      - name: Cache SonarCloud scanner
         id: cache-sonar-scanner
         uses: actions/cache@v4
         with:
@@ -43,18 +67,30 @@ jobs:
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
 
-      - name: Install SonarQube Cloud scanner
+      # Langkah 6: Install SonarScanner for .NET jika belum ada di cache
+      - name: Install SonarCloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: powershell
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
-      - name: Build and analyze
+      # Langkah 7 (FIXED): Jalankan Analisis dengan env dan perintah yang benar
+      - name: Build and Analyze
         env:
+          # FIX: Menambahkan GITHUB_TOKEN agar SonarCloud bisa update Pull Request
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"kalpratama_GameZombrrrt" /o:"kalpratama" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          # Mulai proses analisis
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"kalpratama_GameZombrrrt" /o:"kalpratama" /d:sonar.login="${{ env.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+
+          # FIX: Menambahkan 'dotnet restore' sebelum build
+          dotnet restore GameZombrrrt.sln
+          
+          # Build project. Pastikan nama file .sln sudah benar
+          dotnet build GameZombrrrt.sln --no-incremental
+
+          # Akhiri proses analisis
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ env.SONAR_TOKEN }}"
