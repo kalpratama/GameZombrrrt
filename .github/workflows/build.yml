@@ -43,8 +43,6 @@ jobs:
           unityVersion: 2022.3.20f1
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
 
       # Step 2: Run the command directly using the activated Unity Editor
       - name: Generate C# Solution File
